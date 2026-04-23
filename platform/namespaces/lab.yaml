@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dev
+  name: lab
   labels:
-    env: dev
-    tier: nonprod
+    env: lab
+    tier: sandbox
