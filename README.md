@@ -19,15 +19,90 @@ testing workloads against a realistic Kubernetes platform layer.
 
 ---
 
-## Architecture
+## Lab Structure
 
-api.lab
-  ↓ DNS (dnsmasq → 127.0.0.1)
-ingress-nginx
-  ↓ TLS termination (mkcert)
-Kubernetes Service
-  ↓
-Pod (echo)
+```
+├── kind/                         # KIND cluster bootstrap configuration
+│   └── cluster.yaml              # multi-node cluster definition
+│
+├── Makefile                      # primary orchestration entrypoint
+│
+├── platform/                     # core Kubernetes platform layer
+│   ├── ingress/                  # ingress controller (nginx)
+│   │   └── ingress-nginx.yaml
+│   ├── limits/                   # container resource limits defaults
+│   │   └── lab.yaml
+│   ├── namespaces/               # base namespace definitions
+│   │   └── lab.yaml
+│   ├── quotas/                   # resource quotas per namespace
+│   │   └── lab.yaml
+│   └── rbac/                     # access control model
+│       ├── lab-binding.yaml
+│       ├── lab-role.yaml
+│       └── lab-serviceaccount.yaml
+│
+├── scripts/                      # operational automation
+│   └── bootstrap-tls.sh          # mkcert → k8s secret bootstrap
+│
+├── workloads/                    # example application layer (replaceable)
+│   └── echo/
+│       ├── deploy.yaml           # sample workload deployment
+│       └── ingress.yaml          # sample ingress rule
+│
+├── README.md                     # platform documentation + usage guide
+```
+
+---
+
+## Starter Lab Runtime Model
+
+This lab provides a deterministic Kubernetes platform layer. Workloads are
+deployed into the platform to validate DNS, ingress, TLS, and routing behavior.
+
+The included echo API is only a sample workload used to verify platform functionality.
+
+```
+
+        ┌────────────────────────────┐
+        │        Client (curl)       │
+        │      any workload test     │
+        └─────────────┬──────────────┘
+                      │ DNS (dnsmasq)
+                      ▼
+        ┌────────────────────────────┐
+        │  Local DNS Resolution      │
+        │  *.lab → 127.0.0.1         │
+        └─────────────┬──────────────┘
+                      │
+                      ▼
+        ┌────────────────────────────┐
+        │ Kubernetes Platform Layer  │
+        │ KIND multi-node cluster    │
+        │ ingress-nginx controller   │
+        └─────────────┬──────────────┘
+                      │
+                      ▼
+        ┌────────────────────────────┐
+        │ Ingress Routing Layer      │
+        │ host/path rules            │
+        │ TLS termination (mkcert)   │
+        └─────────────┬──────────────┘
+                      │
+                      ▼
+        ┌────────────────────────────┐
+        │ Kubernetes Service Layer   │
+        │ service → pod routing      │
+        └─────────────┬──────────────┘
+                      │
+                      ▼
+        ┌────────────────────────────┐
+        │ Workloads (examples)       │
+        │ echo API (sample only)     │
+        │ replaceable application    │
+        └────────────────────────────┘
+
+                                              
+```
 
 ---
 
@@ -107,7 +182,7 @@ as a TLS secret.
 
 ### Create cluster and deploy everything
 
-make up
+`make up`
 
 This will:
 
@@ -122,7 +197,7 @@ This will:
 
 ### Verify system manually
 
-curl <https://api.lab>
+`curl https://api.lab`
 
 Expected:
 
@@ -132,19 +207,19 @@ hello lab
 
 ### Platform checks (static)
 
-make check
+`make check`
 
 ---
 
 ### Runtime validation (end-to-end)
 
-make validate
+`make validate`
 
 ---
 
 ### Destroy cluster
 
-make down
+`make down`
 
 ---
 
@@ -159,9 +234,14 @@ make down
 
 ## Purpose
 
-This lab is intended as a clean foundation for:
+This lab provides a clean foundation for:
 
 - Testing Kubernetes workloads locally
 - Practicing platform engineering concepts
 - Validating ingress, TLS, and DNS behavior
 - Simulating multi-node cluster environments
+
+Clone or fork this repository to bootstrap local Kubernetes lab environments.
+
+The included echo service is a minimal example used to validate platform behavior.
+It is intended to be replaced with application-specific workloads.
