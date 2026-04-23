@@ -17,8 +17,6 @@ It includes:
 The goal is to provide a clean, deterministic starting point for building and
 testing workloads against a realistic Kubernetes platform layer.
 
----
-
 ## Lab Structure
 
 ```
@@ -51,8 +49,6 @@ testing workloads against a realistic Kubernetes platform layer.
 │
 ├── README.md                     # platform documentation + usage guide
 ```
-
----
 
 ## Starter Lab Runtime Model
 
@@ -104,8 +100,6 @@ The included echo API is only a sample workload used to verify platform function
                                               
 ```
 
----
-
 ## Dependencies
 
 The following must be installed on the host:
@@ -121,8 +115,6 @@ Notes:
 - mkcert must be available in PATH
 - dnsmasq must be installed via Homebrew (macOS) or system package manager
 
----
-
 ## DNS Configuration (dnsmasq)
 
 This lab uses dnsmasq to resolve the `.lab` domain locally.
@@ -137,8 +129,6 @@ Contents:
 
 address=/.lab/127.0.0.1
 
----
-
 ### 2. Configure system resolver (macOS)
 
 Create file:
@@ -149,13 +139,9 @@ Contents:
 
 nameserver 127.0.0.1
 
----
-
 ### 3. Restart dnsmasq
 
 brew services restart dnsmasq
-
----
 
 ### 4. Verify DNS
 
@@ -165,8 +151,6 @@ Expected:
 
 api.lab → 127.0.0.1
 
----
-
 ## TLS
 
 TLS certificates are generated using mkcert and injected into Kubernetes
@@ -175,8 +159,6 @@ as a TLS secret.
 - Certificates are generated at runtime (ephemeral)
 - No persistent certificate storage is required
 - Ingress uses the secret for HTTPS termination
-
----
 
 ## Usage
 
@@ -193,8 +175,6 @@ This will:
 5. Deploy sample workload
 6. Validate end-to-end routing
 
----
-
 ### Verify system manually
 
 `curl https://api.lab`
@@ -203,25 +183,17 @@ Expected:
 
 hello lab
 
----
-
 ### Platform checks (static)
 
 `make check`
-
----
 
 ### Runtime validation (end-to-end)
 
 `make validate`
 
----
-
 ### Destroy cluster
 
 `make down`
-
----
 
 ## Notes
 
@@ -229,8 +201,6 @@ hello lab
 - No manual /etc/hosts changes required
 - No browser certificate trust configuration required
 - All routing is done via ingress-nginx on localhost (ports 80/443)
-
----
 
 ## Purpose
 
